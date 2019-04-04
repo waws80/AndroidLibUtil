@@ -25,6 +25,7 @@ class MainActivity : Activity() {
         LibUtils.logUtil()
         LibUtils.md5Util()
         LibUtils.mmkvUtil()
+        LibUtils.netWorkUtil()
         LibUtils.regexUtil()
         LibUtils.romUtil()
         LibUtils.screenUtil()

@@ -2,6 +2,7 @@ package pw.androidthanatos.android.libutil
 
 import android.app.Application
 import pw.androidthanatos.lib.utils.LibUtils
+import pw.androidthanatos.lib.utils.network.NetUtil
 
 class App : Application() {
 
