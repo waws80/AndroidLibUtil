@@ -155,7 +155,9 @@
     @SubscribeNetWork(receiveType = NetWorkType.MOBILE)
     fun receiverMobile(type: NetWorkType){}
     ```
-* **License**
+# **License**
+* <br>
+
     ```
     Copyright [2019] The AndroidLibUtil Author
 
