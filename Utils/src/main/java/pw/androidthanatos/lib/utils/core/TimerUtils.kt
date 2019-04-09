@@ -36,7 +36,15 @@ class TimerUtils private constructor(){
                 }
                 .setTickDelegate {
                     interval.invoke(it)
-                }
+                }.start()
+        }
+
+        /**
+         * 取消
+         */
+        @JvmName("cancel")
+        fun cancel(){
+            invoke.cancel()
         }
     }
 
