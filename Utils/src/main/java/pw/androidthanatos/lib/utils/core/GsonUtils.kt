@@ -54,7 +54,7 @@ class GsonUtils private constructor(){
      * @param note       节点
      * @return 节点对应的内容
      */
-    fun getNoteJsonString(jsonString: String, note: String): String {
+    fun getNoteJsonString(jsonString: String?, note: String): String {
         val element = JsonParser().parse(jsonString)
         if (element.isJsonNull) {
             throw RuntimeException("得到的jsonElement对象为空")
@@ -67,11 +67,14 @@ class GsonUtils private constructor(){
      * @param jsonString json字符串
      * @return 含有目标对象的集合
      */
-    inline fun <reified T> convertList(jsonString: String, note: String = ""): List<T> {
+    fun <T> convertList(clz: Class<T>, jsonString: String?, note: String = ""): List<T> {
         val json: String = if (note.isEmpty()){
-            jsonString
+            jsonString?:""
         }else{
             getNoteJsonString(jsonString, note)
+        }
+        if (json.isEmpty()){
+            return emptyList()
         }
         val jsonElement = JsonParser().parse(json)
         if (jsonElement.isJsonNull) {
@@ -83,7 +86,7 @@ class GsonUtils private constructor(){
         val jsonArray = jsonElement.asJsonArray
         val beans = ArrayList<T>()
         for (jsonElement2 in jsonArray) {
-            val bean = gson.fromJson(jsonElement2, T::class.java)
+            val bean = gson.fromJson(jsonElement2, clz)
             beans.add(bean)
         }
         return beans
@@ -96,21 +99,44 @@ class GsonUtils private constructor(){
      * @param note       json标签
      * @return 含有目标对象的集合
      */
-    inline fun <reified T> convertObject(jsonString: String, note: String = ""): T {
-        val json = if (note.isEmpty()){
-            jsonString
+    fun <T> convertObject(clz: Class<T>, jsonString: String?, note: String = ""): T {
+        val json: String = if (note.isEmpty()){
+            jsonString?:""
         }else{
             getNoteJsonString(jsonString, note)
         }
-
+        if (json.isEmpty()){
+            return clz.newInstance()
+        }
         val jsonElement = JsonParser().parse(json)
         if (jsonElement.isJsonNull) {
-            return T::class.java.newInstance()
+            return clz.newInstance()
         }
         if (!jsonElement.isJsonObject) {
             throw RuntimeException("json不是一个对象")
         }
-        return gson.fromJson(jsonElement, T::class.java)
+        return gson.fromJson(jsonElement, clz)
+    }
+
+
+    /**
+     * 节点得到节点内容，转化为一个数组
+     * @param jsonString json字符串
+     * @return 含有目标对象的集合
+     */
+    inline fun <reified T> convertList(jsonString: String, note: String = ""): List<T> {
+        return convertList(T::class.java,jsonString, note)
+    }
+
+    /**
+     * 按照节点得到节点内容，转化为一个数组
+     *
+     * @param jsonString json字符串
+     * @param note       json标签
+     * @return 含有目标对象的集合
+     */
+    inline fun <reified T> convertObject(jsonString: String, note: String = ""): T {
+        return convertObject(T::class.java, jsonString, note)
     }
 
 
@@ -119,7 +145,7 @@ class GsonUtils private constructor(){
      * @param obj bean对象
      * @return 返回的是json字符串
      */
-    fun toJson(obj: Any): String {
+    fun toJson(obj: Any?): String {
         return gson.toJson(obj)
     }
 
