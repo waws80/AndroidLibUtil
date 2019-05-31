@@ -19,7 +19,7 @@
 * Gradle中依赖
 
     ```
-    implementation 'com.github.waws80:AndroidLibUtil:1.0.0'
+    implementation 'com.github.waws80:AndroidLibUtil:1.0.1'
     ```
     
 
