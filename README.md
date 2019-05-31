@@ -11,6 +11,10 @@
 
 ## **0、版本**
 
+### **1.0.2版本**
+* 扩展Gson工具类
+
+
 ### **1.0.0版本**
 * 基本功能的实现
 * 网络工具类封装完成
@@ -19,7 +23,7 @@
 * Gradle中依赖
 
     ```
-    implementation 'com.github.waws80:AndroidLibUtil:1.0.1'
+    implementation 'com.github.waws80:AndroidLibUtil:1.0.2'
     ```
     
 
