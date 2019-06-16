@@ -25,6 +25,13 @@
     ```
     implementation 'com.github.waws80:AndroidLibUtil:1.0.2'
     ```
+* 如果出现core库冲突
+
+    ```
+    implementation (rootProject.ext.androidLibUtils){
+        exclude group :'androidx.core' , module: 'core-ktx'
+    }
+    ```
     
 
 ## **2、初始化**
