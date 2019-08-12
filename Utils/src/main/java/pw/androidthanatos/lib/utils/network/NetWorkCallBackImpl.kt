@@ -39,6 +39,19 @@ class NetWorkCallBackImpl private constructor() : ConnectivityManager.NetworkCal
 
     override fun onAvailable(network: Network?) {
         super.onAvailable(network)
+        if (NetUtil.invoke.isWifi()){
+            if (lastStatus != NETWORK_WIFI){
+                LibUtils.logUtil().d("网络为WIFI")
+                sNetWorkCallback.invoke(NetWorkType.WIFI)
+                lastStatus = NETWORK_WIFI
+            }
+        }else{
+            if (lastStatus != NETWORK_MOBILE){
+                LibUtils.logUtil().d("网络类型为流量")
+                sNetWorkCallback.invoke(NetWorkType.MOBILE)
+                lastStatus = NETWORK_MOBILE
+            }
+        }
     }
 
     override fun onLost(network: Network?) {
@@ -52,24 +65,6 @@ class NetWorkCallBackImpl private constructor() : ConnectivityManager.NetworkCal
 
     override fun onCapabilitiesChanged(network: Network?, networkCapabilities: NetworkCapabilities?) {
         super.onCapabilitiesChanged(network, networkCapabilities)
-        if (networkCapabilities != null){
-            if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)){
-                if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)){
-                    if (lastStatus != NETWORK_WIFI){
-                        LibUtils.logUtil().d("网络为WIFI")
-                        sNetWorkCallback.invoke(NetWorkType.WIFI)
-                        lastStatus = NETWORK_WIFI
-                    }
-                }else{
-                    if (lastStatus != NETWORK_MOBILE){
-                        LibUtils.logUtil().d("网络类型为流量")
-                        sNetWorkCallback.invoke(NetWorkType.MOBILE)
-                        lastStatus = NETWORK_MOBILE
-                    }
-                }
-            }
-        }
-
     }
 
 

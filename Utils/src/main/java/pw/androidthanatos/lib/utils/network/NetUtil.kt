@@ -27,7 +27,8 @@ class NetUtil private constructor(private val application: Application){
 
     companion object {
 
-        private val netChangeListenerMap = HashMap<Activity,List<MethodBean>>()
+        private val netChangeListenerMap = HashMap<Any,List<MethodBean>>()
+
         val invoke = NetUtil(LibUtils.getApplication())
 
     }
@@ -106,7 +107,7 @@ class NetUtil private constructor(private val application: Application){
         application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks{
 
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                getMethodList(activity)
+                bind(activity)
             }
 
             override fun onActivityStarted(activity: Activity) {
@@ -126,17 +127,30 @@ class NetUtil private constructor(private val application: Application){
             }
 
             override fun onActivityDestroyed(activity: Activity) {
-                netChangeListenerMap.remove(activity)
+                unBind(activity)
             }
 
         })
     }
 
     /**
+     * 解绑
+     */
+    fun unBind(obj: Any){
+        if (obj == null){
+            return
+        }
+        netChangeListenerMap.remove(obj)
+    }
+
+    /**
      * 组合当前页面符合通知网络类型的方法
      */
-    private fun getMethodList(activity: Activity) {
-        val methods = activity::class.java.methods
+    fun bind(obj: Any) {
+        if (obj == null){
+            return
+        }
+        val methods = obj::class.java.methods
         val methodBeanList = mutableListOf<MethodBean>()
         methods.forEach {method ->
             val subscribeNetWork = method.getAnnotation(SubscribeNetWork::class.java)
@@ -153,9 +167,8 @@ class NetUtil private constructor(private val application: Application){
                     LibUtils.logUtil().e(tag = "NetUtil", msg = "${method.name}的返回值不是 void")
                 }
             }
-
         }
-        netChangeListenerMap[activity] = methodBeanList
+        netChangeListenerMap[obj] = methodBeanList
     }
 
     /**
@@ -170,39 +183,39 @@ class NetUtil private constructor(private val application: Application){
     /**
      * 给目标页面合适的方法发送网络状态信息
      */
-    private fun sendNetWorkTypeToTarget(activity: Activity, list: List<MethodBean>, netWorkType: NetWorkType) {
-        if (activity.isFinishing) return
+    private fun sendNetWorkTypeToTarget(obj: Any, list: List<MethodBean>, netWorkType: NetWorkType) {
+        if (obj is Activity && (obj as Activity).isFinishing) return
         list.forEach {
-            sendNetWorkTypeToMethod(activity, it, netWorkType)
+            sendNetWorkTypeToMethod(obj, it, netWorkType)
         }
     }
 
     /**
      * 分发网络状态信息给目标
      */
-    private fun sendNetWorkTypeToMethod(activity: Activity, bean: MethodBean, netWorkType: NetWorkType) {
-        if (activity.isFinishing) return
+    private fun sendNetWorkTypeToMethod(obj: Any, bean: MethodBean, netWorkType: NetWorkType) {
+        if (obj is Activity && (obj as Activity).isFinishing) return
         if (bean.receiverType == netWorkType || bean.receiverType == NetWorkType.ALL){
-            sendToMethod(activity, bean.method, bean.threadType, netWorkType)
+            sendToMethod(obj, bean.method, bean.threadType, netWorkType)
         }
     }
 
 
-    private fun sendToMethod(activity: Activity, method: Method, threadType: ThreadType, netWorkType: NetWorkType) {
+    private fun sendToMethod(obj: Any, method: Method, threadType: ThreadType, netWorkType: NetWorkType) {
         when(threadType){
             ThreadType.POSTING -> {
-                send(activity, method, netWorkType)
+                send(obj, method, netWorkType)
             }
             ThreadType.MAIN -> {
                 if (Looper.getMainLooper() != Looper.myLooper()){
-                    LibUtils.weakHandler().post { send(activity, method, netWorkType) }
+                    LibUtils.weakHandler().post { send(obj, method, netWorkType) }
                 }else{
-                    send(activity, method, netWorkType)
+                    send(obj, method, netWorkType)
                 }
             }
             ThreadType.BACKGROUND -> {
                 LibUtils.threadPool().execute {
-                    send(activity, method, netWorkType)
+                    send(obj, method, netWorkType)
                 }
             }
         }
@@ -211,8 +224,8 @@ class NetUtil private constructor(private val application: Application){
     /**
      * 调用方法
      */
-    private fun send(activity: Activity, method: Method, netWorkType: NetWorkType){
-        method.invoke(activity, netWorkType)
+    private fun send(obj: Any, method: Method, netWorkType: NetWorkType){
+        method.invoke(obj, netWorkType)
     }
 
 
