@@ -158,7 +158,7 @@ class NetUtil private constructor(private val application: Application){
                 if (method.returnType.name == "void"){
                     if (method.parameterTypes.size == 1
                         && method.parameterTypes[0].name == "pw.androidthanatos.lib.utils.network.NetWorkType"){
-                        LibUtils.logUtil().d(tag = "NetUtil", msg = "目标类：${activity::class.java.name}, 方法：${method.name}被添加入网络监听列表，接收的网络类型：${subscribeNetWork.receiveType}, 接收的线程类型：${subscribeNetWork.value}")
+                        LibUtils.logUtil().d(tag = "NetUtil", msg = "目标类：${obj::class.java.name}, 方法：${method.name}被添加入网络监听列表，接收的网络类型：${subscribeNetWork.receiveType}, 接收的线程类型：${subscribeNetWork.value}")
                         methodBeanList.add(MethodBean(method,subscribeNetWork.value, subscribeNetWork.receiveType))
                     }else{
                         LibUtils.logUtil().e(tag = "NetUtil", msg = "${method.name}的参数只能有一个，并且是 NetWorkType")
