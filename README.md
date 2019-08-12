@@ -19,11 +19,15 @@
 * 基本功能的实现
 * 网络工具类封装完成
 
+### **1.1.1版本**
+* 注解添加网络监听
+
+
 ## **1、引用**
 * Gradle中依赖
 
     ```
-    implementation 'com.github.waws80:AndroidLibUtil:1.0.2'
+    implementation 'com.github.waws80:AndroidLibUtil:1.1.1'
     ```
 * 如果出现core库冲突
 
